@@ -1,5 +1,33 @@
+
+// Service worker
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('assets/js/worker.js').then(function(registration) {
+        // Registration was successful
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, function(err) {
+        // registration failed :(
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+
+// link to a image file
+var iconUrl = 'favicon/android-icon-48x48.png';
+
+// create the <img> html element
+// on first load it will request the image
+// second time it will load it from cache directly thanks to the service worker
+var imgElement = document.createElement('img');
+imgElement.src = iconUrl;
+
 const login = document.getElementById('login');
 const checkVisitor = document.getElementById('nameTitle');
+const progressBar = document.getElementById('myBar');
+progressBar.style.display = 'none';
+const content = document.getElementById('content');
+content.style.display = 'none';
 function hideMenuLog() {
 
     document.getElementById('loggedin').style.display = 'none';
@@ -66,118 +94,22 @@ loggedin.addEventListener('submit', function (e) {
         document.getElementById('login').style.display = 'block';
     }
 });
-
-//*<script> to populate dropdown <select> with grade*
-/*
-gradeOP = document.getElementById('choose_grade');
-
-//check if role id exist
-if (gradeOP.id == 'choose_grade') {
-
-    var grades = document.getElementById('find');
-    grades.addEventListener('click', function () {
-        //set dropdown
-
-
-        //create option dropdown
-        let defaultOption = document.createElement('h5');
-        gradeText = document.createTextNode('Choose Grade')
-        defaultOption.appendChild(gradeText);
-        gradeOP.appendChild(defaultOption);
-        populate = document.getElementById('populate_grade');
-
-
-        //if role id exist AJAX query database  
-
-        const uri = 'php/model/read.php?req_func=readGrades';
-        let h = new Headers();
-        h.append('Accept', 'application/json');
-        let req = new Request(uri, {
-            method: 'GET',
-            headers: h,
-            mod: 'cors'
-        });
-        fetch(req)
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('We connected to the server, but it returned an error.');
-                }
-            })
-            .then((jsonData) => {
-                var ourData = jsonData;
-                renderGrades(ourData);
-                //loop throughout data
-                function renderGrades(data) {
-                    for (let i = 0; i < data.length; i++) {
-                        var listItem = document.createElement('LI');
-                        
-                        populate.appendChild(listItem);
-                        radio = document.createElement('input');
-                        radio.type = 'radio';
-                        radio.name = 'grades';
-                        text = document.createElement('p');
-                        text.innerHTML = data[i].gradeName;
-                        radio.value = data[i].gradeID;
-                        text.appendChild(radio);
-                        listItem.appendChild(text);
-                    }
-
-                }
-
-                console.log(gradeOP);
-
-
-            })
-            .catch((err) => {
-                console.log('ERROR:', err.message);
-            });
-            retrieveGrade = document.getElementsByName('grades');
-
-            retrieveGrade.addEventListener('click', function () {
-                myImputs = document.getElementsByName('grades').value;
-                keyValue = 'gradeID';
-                var myObj = {};
-                myObj[keyValue] = myImputs;
-                console.log(myObj);
-        
-                const uri = 'php/model/read.php?req_func=getGrade';
-                let h = new Headers();
-                h.append('Accept', 'application/json');
-                let req = new Request(uri, {
-                    method: 'POST',
-                    headers: h,
-                    mod: 'cors',
-                    body: JSON.stringify(myObj)
-        
-                });
-        
-                fetch(req)
-        
-                    .then((response) => {
-                        if (response.ok) {
-                            return response.json();
-                        }
-                    })
-                    .then((jsonData) => {
-                        var ourData = jsonData.message;
-                        console.log(ourData);
-        
-        
-        
-                    })
-                    .catch((err) => {
-                        console.log('ERROR:', err.message);
-                    });
-            });
-    });
-    
-    
-
-
+// Onload hero bar
+function hero() {
+    progressBar.style.display = 'block';
+    move();
 }
-*/
+
+window.onload = hero();
+
+//var progressFind = document.getElementById('find');
+//progressFind.addEventListener('click', () => {
+//    progressBar.style.display = 'block';
+//    move();
+//
+//});
+
+// Populate dropdown with grades
 gradeOP = document.getElementById('choose_grade');
 
 //check if role id exist
@@ -185,6 +117,7 @@ if (gradeOP.id == 'choose_grade') {
 
     var mediums = document.getElementById('find');
     mediums.addEventListener('click', function () {
+
         //set dropdown
         let dropdown = gradeOP;
         dropdown.length = 0;
@@ -379,16 +312,16 @@ if (productOP.id == 'choose_product') {
 
     var product = document.getElementById('find');
     product.addEventListener('click', function () {
-            //set dropdown
-            let dropdown = productOP;
-            dropdown.length = 0;
+        //set dropdown
+        let dropdown = productOP;
+        dropdown.length = 0;
 
-            //create option dropdown
-            let defaultOption = document.createElement('option');
-            defaultOption.text = 'Choose Product';
+        //create option dropdown
+        let defaultOption = document.createElement('option');
+        defaultOption.text = 'Choose Product';
 
-            dropdown.add(defaultOption);
-            dropdown.selectedIndex = 0;
+        dropdown.add(defaultOption);
+        dropdown.selectedIndex = 0;
         productOP.addEventListener('click', function () {
 
             let dropdown = productOP;
@@ -814,3 +747,24 @@ for (var i = 0; i < btns.length; i++) {
         }
     });
 }*/
+function move() {
+    progressBar.style.display = 'block';
+    var elem = document.getElementById("myBar");
+    var width = 10;
+    var id = setInterval(frame, 10);
+    function frame() {
+        if (width >= 100) {
+            clearInterval(id);
+            progressBar.style.display = 'none';
+            content.style.display = 'block';
+        } else {
+            content.style.display = 'none';
+            width++;
+            elem.style.width = width + '%';
+            elem.innerHTML = width * 1 + '%';
+
+        }
+    }
+}
+
+
